@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>IntelliCover</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-light: #3b82f6;
+    --blue-pale: #eff6ff;
+    --blue-dark: #1d4ed8;
+    --green: #16a34a;
+    --green-light: #22c55e;
+    --green-pale: #f0fdf4;
+    --orange: #f97316;
+    --orange-pale: #fff7ed;
+    --red: #ef4444;
+    --red-pale: #fef2f2;
+    --purple: #8b5cf6;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xs: 8px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
+    --font: 'Sora', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: #e8edf5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .phone-shell {
+    width: 390px;
+    min-height: 780px;
+    background: var(--gray-50);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25), 0 0 0 10px #1a1a2e, 0 0 0 12px #333;
+    position: relative;
+  }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: 780px;
+    animation: fadeSlide 0.3s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeSlideLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .slide-left { animation: fadeSlideLeft 0.3s ease; }
+
+  /* ── SCREEN 1: Welcome ── */
+  #screen-welcome {
+    background: #fff;
+    align-items: center;
+    padding: 48px 28px 32px;
+    gap: 0;
+  }
+
+  .welcome-logo {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(37,99,235,0.35);
+    margin-bottom: 24px;
+  }
+
+  .welcome-title {
+    font-family: var(--font);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gray-900);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .welcome-subtitle {
+    font-size: 14px;
+    color: var(--gray-500);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .welcome-hero {
+    width: 100%;
+    height: 210px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .welcome-hero img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  .welcome-hero-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #0ea5e9 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-bike {
+    font-size: 64px;
+    filter: drop-shadow(0 0 20px rgba(14,165,233,0.6));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .hero-streaks {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(14,165,233,0.05) 40px, rgba(14,165,233,0.05) 41px);
+    animation: streakMove 1.5s linear infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes streakMove {
+    from { transform: translateX(0); }
+    to { transform: translateX(41px); }
+  }
+
+  .welcome-form {
+    width: 100%;
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px 20px 20px;
+    box-shadow: 0 -4px 32px rgba(0,0,0,0.06);
+    margin-top: auto;
+  }
+
+  .form-label {
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--blue);
+    background: var(--blue-pale);
+  }
+
+  .input-wrap svg { flex-shrink: 0; }
+
+  .input-wrap input {
+    border: none; background: transparent;
+    font-family: var(--font-body);
+    font-size: 15px; color: var(--gray-800);
+    width: 100%; outline: none;
+  }
+
+  .input-wrap input::placeholder { color: var(--gray-400); }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    border: none; border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+  }
+
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(37,99,235,0.4); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .welcome-terms {
+    font-size: 11px; color: var(--gray-400);
+    text-align: center; margin-top: 14px;
+  }
+
+  .welcome-terms a { color: var(--blue); text-decoration: none; }
+
+  /* ── SCREEN 2: Home / Dashboard ── */
+  #screen-home { background: var(--gray-100); }
+
+  .home-header {
+    background: linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 60%, var(--blue-light) 100%);
+    padding: 52px 24px 48px;
+    position: relative; overflow: hidden;
+  }
+
+  .home-header::after {
+    content: '';
+    position: absolute; bottom: -30px; left: 0; right: 0; height: 60px;
+    background: var(--gray-100);
+    border-radius: 50% 50% 0 0 / 30px;
+  }
+
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .hamburger {
+    width: 36px; height: 36px;
+    display: flex; flex-direction: column; justify-content: center; gap: 5px;
+    cursor: pointer; padding: 4px;
+  }
+
+  .hamburger span {
+    display: block; height: 2px; background: rgba(255,255,255,0.8);
+    border-radius: 2px;
+  }
+
+  .notif-btn {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    background: #fb923c; border-radius: 50%;
+    border: 1.5px solid var(--blue);
+  }
+
+  .user-greeting {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .avatar {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%; border: 2px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .greeting-text p { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+  .greeting-text h2 { font-family: var(--font); font-size: 18px; font-weight: 700; color: #fff; }
+
+  .home-content { padding: 12px 20px 24px; flex: 1; overflow-y: auto; }
+
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+
+  .protection-card { margin-bottom: 16px; }
+
+  .protection-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .protection-top small { font-size: 12px; color: var(--gray-500); }
+  .protection-top h3 { font-family: var(--font); font-size: 20px; font-weight: 700; color: var(--gray-900); }
+
+  .shield-icon {
+    width: 44px; height: 44px;
+    background: var(--green-pale);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+
+  .plan-badge {
+    background: var(--green-pale);
+    border-radius: var(--radius-xs);
+    padding: 12px 14px;
+  }
+
+  .plan-badge small { font-size: 11px; color: var(--gray-500); display: block; margin-bottom: 2px; }
+  .plan-badge strong { font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--gray-800); }
+  .plan-badge span { font-size: 12px; color: var(--green); }
+
+  .earnings-card {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+  }
+
+  .earnings-card small { font-size: 12px; color: rgba(255,255,255,0.75); }
+
+  .earnings-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .earnings-amount {
+    font-family: var(--font);
+    font-size: 32px; font-weight: 700; color: #fff;
+    margin: 4px 0;
+  }
+
+  .earnings-date { font-size: 13px; color: rgba(255,255,255,0.8); }
+
+  .earnings-icon {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+
+  .section-title {
+    font-family: var(--font);
+    font-size: 16px; font-weight: 700;
+    color: var(--gray-800); margin-bottom: 12px;
+  }
+
+  .alert-card {
+    background: #fff; border-radius: var(--radius);
+    padding: 16px; box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    display: flex; gap: 12px;
+  }
+
+  .alert-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  .alert-icon-wrap.rain { background: #eff6ff; }
+  .alert-icon-wrap.heat { background: #fff7ed; }
+
+  .alert-body { flex: 1; }
+  .alert-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .alert-top h4 { font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--gray-800); }
+
+  .badge {
+    font-size: 10px; font-weight: 600;
+    padding: 3px 8px; border-radius: 20px;
+  }
+
+  .badge.active { background: var(--green-pale); color: var(--green); }
+  .badge.monitoring { background: var(--gray-100); color: var(--gray-500); }
+
+  .alert-body p { font-size: 12px; color: var(--gray-500); margin-bottom: 8px; }
+  .view-link { font-size: 12px; font-weight: 600; color: var(--blue); text-decoration: none; display: flex; align-items: center; gap: 2px; cursor: pointer; }
+
+  .bottom-actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 4px;
+  }
+
+  .action-btn {
+    background: #fff; border-radius: var(--radius);
+    padding: 18px 16px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; border: none; transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .action-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .action-btn span { font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--gray-700); }
+
+  /* ── SCREEN 3: Choose Plan ── */
+  #screen-plans { background: var(--gray-50); }
+
+  .screen-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 52px 20px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .back-btn {
+    width: 36px; height: 36px;
+    background: var(--gray-100); border: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .back-btn:hover { background: var(--gray-200); }
+
+  .screen-header-text h2 {
+    font-family: var(--font);
+    font-size: 20px; font-weight: 700; color: var(--gray-900);
+  }
+
+  .screen-header-text p { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+  .plans-list { padding: 20px 20px 100px; overflow-y: auto; flex: 1; }
+
+  .plan-card {
+    background: #fff; border-radius: var(--radius);
+    padding: 20px; margin-bottom: 12px;
+    border: 2px solid transparent;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .plan-card.selected {
+    border-color: var(--blue);
+    box-shadow: 0 4px 24px rgba(37,99,235,0.15);
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--blue);
+    color: #fff; font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    display: flex; align-items: center; gap: 4px;
+    white-space: nowrap;
+  }
+
+  .plan-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .plan-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+
+  .plan-icon.blue { background: var(--blue-pale); }
+  .plan-icon.orange { background: var(--orange-pale); }
+  .plan-icon.purple { background: #f5f3ff; }
+
+  .plan-name {
+    font-family: var(--font); font-size: 17px; font-weight: 700;
+    color: var(--gray-900); margin-bottom: 4px;
+  }
+
+  .plan-price { font-size: 13px; color: var(--gray-500); }
+  .plan-price strong { color: var(--gray-800); font-size: 15px; }
+
+  .plan-radio {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--gray-300);
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, background 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .plan-card.selected .plan-radio {
+    border-color: var(--blue); background: var(--blue);
+  }
+
+  .plan-radio::after {
+    content: '✓'; color: #fff; font-size: 12px; font-weight: 700;
+    opacity: 0; transition: opacity 0.2s;
+  }
+
+  .plan-card.selected .plan-radio::after { opacity: 1; }
+
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+  .plan-features li {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--gray-500);
+  }
+
+  .plan-features li.active { color: var(--gray-700); }
+
+  .check-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .check-icon.on { background: var(--green-pale); color: var(--green); }
+  .check-icon.off { background: var(--gray-100); color: var(--gray-300); }
+
+  .bottom-bar {
+    position: sticky; bottom: 0;
+    padding: 16px 20px 28px;
+    background: #fff;
+    border-top: 1px solid var(--gray-100);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+
+  /* ── SCREEN 4: Claims ── */
+  #screen-claims { background: var(--gray-100); }
+
+  .claims-content { padding: 16px 20px 32px; overflow-y: auto; flex: 1; }
+
+  .claim-approved-card {
+    background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+    border-radius: 20px; padding: 28px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 28px rgba(22,163,74,0.35);
+    text-align: center;
+  }
+
+  .approved-icon {
+    width: 56px; height: 56px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+
+  .claim-approved-card h2 {
+    font-family: var(--font);
+    font-size: 22px; font-weight: 700; color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .claim-approved-card p { font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 16px; }
+
+  .amount-box {
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius-sm); padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .amount-box small { font-size: 11px; color: rgba(255,255,255,0.7); }
+  .amount-box .big-amount {
+    font-family: var(--font);
+    font-size: 36px; font-weight: 800; color: #fff;
+  }
+
+  .claim-meta {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: rgba(255,255,255,0.7);
+  }
+
+  .how-it-works {
+    background: #fff; border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+
+  .how-title {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    color: var(--gray-800); margin-bottom: 16px;
+  }
+
+  .step-item {
+    display: flex; gap: 12px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+
+  .step-item:last-child { margin-bottom: 0; }
+
+  .step-num {
+    width: 28px; height: 28px;
+    background: var(--blue-pale);
+    color: var(--blue);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font); font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-text h4 { font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 2px; }
+  .step-text p { font-size: 12px; color: var(--gray-500); }
+
+  .history-item {
+    background: #fff; border-radius: var(--radius);
+    padding: 14px 16px; box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .history-icon {
+    width: 42px; height: 42px;
+    background: var(--gray-100); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+
+  .history-body { flex: 1; }
+  .history-body h4 { font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .history-body small { font-size: 11px; color: var(--gray-400); }
+
+  .history-amount { font-family: var(--font); font-size: 15px; font-weight: 700; }
+  .history-amount.credit { color: var(--green); }
+  .history-status { font-size: 11px; color: var(--gray-400); text-align: right; }
+
+  /* Utility */
+  .mt-auto { margin-top: auto; }
+  .w-full { width: 100%; }
+
+  svg { display: block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 0; }
+</style>
+</head>
+<body>
+
+<div class="phone-shell">
+
+  <!-- ═══ SCREEN 1: Welcome ═══ -->
+  <div id="screen-welcome" class="screen active">
+    <div class="welcome-logo">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <path d="M17 4L6 9.5V18c0 6.075 4.7 11.75 11 13.5C23.3 29.75 28 24.075 28 18V9.5L17 4Z" fill="white" fill-opacity="0.9"/>
+        <path d="M12 17l3.5 3.5L22 13" stroke="rgba(37,99,235,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h1 class="welcome-title">Welcome to IntelliCover</h1>
+    <p class="welcome-subtitle">Protect your income with smart insurance</p>
+
+    <div class="welcome-hero">
+      <div class="welcome-hero-placeholder">
+        <div class="hero-streaks"></div>
+        <span class="hero-bike">🏍️</span>
+      </div>
+    </div>
+
+    <div class="welcome-form mt-auto">
+      <label class="form-label">Phone Number</label>
+      <div class="input-wrap">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M3 2h3.5l1.5 4-2 1.5c1 2 2.5 3.5 4.5 4.5L12 10l4 1.5V15c0 .5-.5 1-1 1C6 16 2 10 2 4c0-.5.5-1 1-1Z" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <input type="tel" placeholder="Enter your phone number" id="phone-input" maxlength="10">
+      </div>
+      <button class="btn-primary" onclick="goToHome()">
+        Continue
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <p class="welcome-terms">By continuing, you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a></p>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 2: Home Dashboard ═══ -->
+  <div id="screen-home" class="screen">
+    <div class="home-header">
+      <div class="header-top">
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="notif-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2a5 5 0 0 0-5 5v3l-1.5 2H15.5L14 10V7a5 5 0 0 0-5-5ZM7 15a2 2 0 0 0 4 0" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div class="notif-dot"></div>
+        </div>
+      </div>
+      <div class="user-greeting">
+        <div class="avatar">👋</div>
+        <div class="greeting-text">
+          <p>Welcome back</p>
+          <h2>Rajesh Kumar</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-content">
+      <!-- Protection Status -->
+      <div class="card protection-card">
+        <div class="protection-top">
+          <div>
+            <small>Protection Status</small>
+            <h3 style="color:var(--green)">Active</h3>
+          </div>
+          <div class="shield-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3L4 7v6c0 5 3.6 9.5 8 11 4.4-1.5 8-6 8-11V7L12 3Z" fill="#22c55e" fill-opacity="0.2" stroke="#16a34a" stroke-width="1.8"/>
+              <path d="M9 12l2.5 2.5L15 10" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="plan-badge">
+          <small>Current Plan</small>
+          <strong>Standard Plan</strong><br>
+          <span>₹35/week • Valid till March 20, 2026</span>
+        </div>
+      </div>
+
+      <!-- Earnings -->
+      <div class="earnings-card">
+        <small>Earnings Protected This Week</small>
+        <div class="earnings-row">
+          <div>
+            <div class="earnings-amount">₹4,500</div>
+            <div class="earnings-date">March 10 – March 16, 2026</div>
+          </div>
+          <div class="earnings-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M4 14l5-5 3 3 6-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="section-title">Active Disruption Alerts</div>
+
+      <div class="alert-card">
+        <div class="alert-icon-wrap rain">🌧️</div>
+        <div class="alert-body">
+          <div class="alert-top">
+            <h4>Heavy Rain Alert</h4>
+            <span class="badge active">Active</span>
+          </div>
+          <p>Rainfall detected in your area. Your earnings are protected.</p>
+          <a class="view-link" onclick="goToClaims()">View details ›</a>
+        </div>
+      </div>
+
+      <div class="alert-card">
+        <div class="alert-icon-wrap heat">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-top">
+            <h4>Heat Wave Warning</h4>
+            <span class="badge monitoring">Monitoring</span>
+          </div>
+          <p>Temperature expected to rise above 40°C tomorrow.</p>
+          <a class="view-link" onclick="goToClaims()">View details ›</a>
+        </div>
+      </div>
+
+      <!-- Bottom Actions -->
+      <div class="bottom-actions">
+        <button class="action-btn" onclick="goToPlans()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3L4 7v6c0 5 3.6 9.5 8 11 4.4-1.5 8-6 8-11V7L12 3Z" stroke="#2563eb" stroke-width="1.8" fill="#eff6ff"/>
+          </svg>
+          <span>Upgrade Plan</span>
+        </button>
+        <button class="action-btn" onclick="goToClaims()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4 14l5-5 3 3 6-7" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>View Claims</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 3: Choose Plan ═══ -->
+  <div id="screen-plans" class="screen">
+    <div class="screen-header">
+      <button class="back-btn" onclick="goBack('screen-home')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 4l-5 5 5 5" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="screen-header-text">
+        <h2>Choose Your Plan</h2>
+        <p>Select the protection plan that works best for you</p>
+      </div>
+    </div>
+
+    <div class="plans-list">
+      <!-- Basic Plan -->
+      <div class="plan-card" id="plan-basic" onclick="selectPlan('basic')">
+        <div class="plan-top">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="plan-icon blue">🌧️</div>
+              <div>
+                <div class="plan-name">Basic Plan</div>
+                <div class="plan-price"><strong>₹20</strong> per week</div>
+              </div>
+            </div>
+          </div>
+          <div class="plan-radio" id="radio-basic"></div>
+        </div>
+        <ul class="plan-features">
+          <li class="active"><span class="check-icon on">✓</span> Rain disruption protection</li>
+          <li class="active"><span class="check-icon on">✓</span> Automatic claim processing</li>
+          <li><span class="check-icon off">✓</span> Heat protection</li>
+          <li><span class="check-icon off">✓</span> Pollution protection</li>
+          <li><span class="check-icon off">✓</span> Priority support</li>
+        </ul>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="plan-card selected" id="plan-standard" onclick="selectPlan('standard')" style="margin-top:20px">
+        <div class="popular-badge">⭐ Most Popular</div>
+        <div class="plan-top">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="plan-icon orange">☀️</div>
+              <div>
+                <div class="plan-name">Standard Plan</div>
+                <div class="plan-price"><strong>₹35</strong> per week</div>
+              </div>
+            </div>
+          </div>
+          <div class="plan-radio" id="radio-standard"></div>
+        </div>
+        <ul class="plan-features">
+          <li class="active"><span class="check-icon on">✓</span> Rain disruption protection</li>
+          <li class="active"><span class="check-icon on">✓</span> Automatic claim processing</li>
+          <li class="active"><span class="check-icon on">✓</span> Heat protection</li>
+          <li><span class="check-icon off">✓</span> Pollution protection</li>
+          <li class="active"><span class="check-icon on">✓</span> Priority support</li>
+        </ul>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="plan-card" id="plan-premium" onclick="selectPlan('premium')">
+        <div class="plan-top">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="plan-icon purple">💨</div>
+              <div>
+                <div class="plan-name">Premium Plan</div>
+                <div class="plan-price"><strong>₹50</strong> per week</div>
+              </div>
+            </div>
+          </div>
+          <div class="plan-radio" id="radio-premium"></div>
+        </div>
+        <ul class="plan-features">
+          <li class="active"><span class="check-icon on">✓</span> Rain disruption protection</li>
+          <li class="active"><span class="check-icon on">✓</span> Automatic claim processing</li>
+          <li class="active"><span class="check-icon on">✓</span> Heat protection</li>
+          <li class="active"><span class="check-icon on">✓</span> Pollution protection</li>
+          <li class="active"><span class="check-icon on">✓</span> Priority support</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <button class="btn-primary" id="activate-btn" onclick="activatePlan()">Activate Standard Plan</button>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 4: Claims ═══ -->
+  <div id="screen-claims" class="screen">
+    <div class="screen-header">
+      <button class="back-btn" onclick="goBack('screen-home')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 4l-5 5 5 5" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="screen-header-text">
+        <h2>Claims</h2>
+        <p>Your automatic claim notifications</p>
+      </div>
+    </div>
+
+    <div class="claims-content">
+      <!-- Approved Banner -->
+      <div class="claim-approved-card">
+        <div class="approved-icon">✅</div>
+        <h2>Claim Approved!</h2>
+        <p>Heavy rain detected in your area</p>
+        <div class="amount-box">
+          <small>Amount Credited</small>
+          <div class="big-amount">₹500</div>
+        </div>
+        <div class="claim-meta">
+          <span>March 14, 2026 • 11:30 AM</span>
+          <span>Auto-approved</span>
+        </div>
+      </div>
+
+      <!-- How it Works -->
+      <div class="how-it-works">
+        <div class="how-title">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2l1.5 3 3.5.5-2.5 2.5.5 3.5L9 10 6 12l.5-3.5L4 6l3.5-.5L9 2Z" fill="#60a5fa"/>
+          </svg>
+          How It Works
+        </div>
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>AI Detects Disruption</h4>
+            <p>Our AI monitors weather and environmental conditions in real-time</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Automatic Verification</h4>
+            <p>System verifies impact on delivery operations automatically</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Instant Payout</h4>
+            <p>Compensation credited directly to your account within minutes</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="section-title">Claim History</div>
+
+      <div class="history-item">
+        <div class="history-icon">🌧️</div>
+        <div class="history-body">
+          <h4>Heavy Rain</h4>
+          <small>March 14, 2026</small>
+        </div>
+        <div>
+          <div class="history-amount credit">+₹500</div>
+          <div class="history-status">Approved</div>
+        </div>
+      </div>
+
+      <div class="history-item">
+        <div class="history-icon">🌡️</div>
+        <div class="history-body">
+          <h4>Extreme Heat</h4>
+          <small>March 11, 2025</small>
+        </div>
+        <div>
+          <div class="history-amount credit">+₹350</div>
+          <div class="history-status">Approved</div>
+        </div>
+      </div>
+
+      <div class="history-item">
+        <div class="history-icon">🌫️</div>
+        <div class="history-body">
+          <h4>Heavy Smog</h4>
+          <small>February 28, 2025</small>
+        </div>
+        <div>
+          <div class="history-amount credit">+₹420</div>
+          <div class="history-status">Approved</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end phone-shell -->
+
+<script>
+  let selectedPlan = 'standard';
+  const planNames = { basic: 'Basic', standard: 'Standard', premium: 'Premium' };
+
+  function showScreen(id, direction) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    if (direction === 'back') el.classList.add('slide-left');
+    else el.classList.remove('slide-left');
+    setTimeout(() => el.classList.remove('slide-left'), 400);
+  }
+
+  function goToHome() {
+    const val = document.getElementById('phone-input').value.trim();
+    if (!val || val.length < 6) {
+      document.getElementById('phone-input').style.borderColor = 'red';
+      return;
+    }
+    showScreen('screen-home');
+  }
+
+  function goToPlans() { showScreen('screen-plans'); }
+  function goToClaims() { showScreen('screen-claims'); }
+  function goBack(id) { showScreen(id, 'back'); }
+
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    ['basic','standard','premium'].forEach(p => {
+      document.getElementById('plan-' + p).classList.remove('selected');
+    });
+    document.getElementById('plan-' + plan).classList.add('selected');
+    document.getElementById('activate-btn').textContent = 'Activate ' + planNames[plan] + ' Plan';
+  }
+
+  function activatePlan() {
+    const btn = document.getElementById('activate-btn');
+    btn.textContent = '✓ Plan Activated!';
+    btn.style.background = 'linear-gradient(135deg, #15803d, #22c55e)';
+    setTimeout(() => {
+      goBack('screen-home');
+      btn.textContent = 'Activate ' + planNames[selectedPlan] + ' Plan';
+      btn.style.background = '';
+    }, 1200);
+  }
+
+  // Allow Enter key on phone input
+  document.getElementById('phone-input').addEventListener('keypress', e => {
+    if (e.key === 'Enter') goToHome();
+  });
+  document.getElementById('phone-input').addEventListener('input', e => {
+    e.target.style.borderColor = '';
+  });
+</script>
+
+</body>
+</html>
